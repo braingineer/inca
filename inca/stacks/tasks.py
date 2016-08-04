@@ -91,10 +91,21 @@ def next_item(tracker, storage):
     if len(storage.keys()) == 0:
         return 'stack empty'
 
+
     if 'index' not in tracker:
         tracker['index'] = 0
+    try:
+        item_key = sorted(storage.keys())[tracker['index']]
+    except IndexError:
+        if len(storage) > 0:
+            temp = dict(enumerate(storage.values()))
+            storage.clear()
+            storage.update(temp)
+            storage.commit()
+            tracker['index'] = 0
+            item_key = sorted(storage.keys())[tracker['index']]
 
-    item_key = sorted(storage.keys())[tracker['index']]
+
     tracker['index'] = (tracker['index'] + 1) % len(storage.keys())
     shortened_desc = " ".join(storage[item_key]['description'].split(" ")[:10]) + "..."
     urgency = storage[item_key]['urgency']
